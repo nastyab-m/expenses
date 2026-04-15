@@ -1,4 +1,6 @@
 import sys
+import os
+import json
 
 DATA_FILE = "expenses.json"
 
@@ -6,13 +8,72 @@ def loadData():
 
 #загрузить данные из json файла
 
-def saveData():
+    if not os.path.exists(DATA_FILE):
+        return {"categories" : [], "expenses" : []}
+    
+    with open(DATA_FILE, "r", encoding="utf-8") as file:
+        return json.load(file)
+    
+#   if not os.path.exists(DATA_FILE):               проверка на существование файла DATA_FILE (врзвращает true если файл есть и false если файла нету)
+#   
+#   return {"categories" : [], "expenses" : []}     создание словаря
+#   пример:
+#   {
+#       "categories": [],
+#       "expenses": []
+#   }
+#   
+#   with open(DATA_FILE, "r", encoding="utf-8") as file:
+#   "r"                     для чтения
+#   encoding="utf-8"        для работы с русской раскладкой
+#   
+#   return json.load(file)
+#   читает json данный из вайла и создает их в питон словарь со списками
 
+def saveData(data):
+    
 #сохранить данные в json файл
 
-def addCategory():
+    with open(DATA_FILE, "w", encoding="utf-8") as file:
+        json.dump(data, file, indent=2, ensure_ascii=False)
+
+#   with open(DATA_FILE, "w", encoding="utf-8") as file:    
+#   "w"                     для записи
+#   encoding="utf-8"        для работы с русской раскладкой
+#   
+#   json.dump(data, file, indent=2, ensure_ascii=False)
+#   json.dump()             записывает в питон обьект в json файл
+#   data                    то что записываем
+#   file                    куда
+#   indent=2                отступы для читаемости (2 - два пробела)
+#   ensure_ascii=False      позволяет писать русские буквы в виде букв а не \u0435\u0441....
+
+def addCategory(category):
 
 #добавить категорию
+
+    data = loadData()
+
+    if category in data["categories"]:
+        print(f"'{category}' already exists")
+        return
+    
+    data["categories"].append(category)
+
+    saveData(data)
+
+    print(f"category '{category}' available")
+
+#   data = loadData()                       загрузка текущих файлов (создает пустые если нету)
+#   
+#   if category in data["categories"]:      проверка - есть ли уже такая категория (если есть то return)
+#   
+#   data["categories"].append(category)     добавление новой категории в конец списка data["categories"] и .append() в конец
+#   
+#   saveData(data)                          сохраняет обновленные данные в файл
+#   
+#   print(f"category '{category}' available")
+#   вывод при успехе успешно
 
 def addExpense():
 
@@ -37,7 +98,7 @@ def main():
     #   проверка на кол-во аргументов
 
 
-    coomand = sys.argv[1]
+    command = sys.argv[1]
 
     if command == "add-catt":
         if len(sys.argv) != 3:
