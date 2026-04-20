@@ -75,17 +75,158 @@ def addCategory(category):
 #   print(f"category '{category}' available")
 #   вывод при успехе успешно
 
-def addExpense():
+def addExpense(cost, category, name):
 
 #добавить растрату
 
-def listExpanses():
+    try:
+        cost = float(cost)
+
+        if cost <= 0:
+            print("only positive")
+
+            return
+    except ValueError:
+        print("only numbers")
+
+        return
+    
+    data = loadData()
+
+    if category not in data["categories"]:
+        print(f"'{category}' not exepts")
+
+        return
+    
+    expense = {
+        "cost": cost, "category": category, "name": name
+    }
+
+    data["expenses"].append(expense)
+
+    saveData(data)
+
+    print("expense added")
+
+#   добавляем растрату
+#   try: exept:                             try блок обработки ошибок -> если ошибка то exept
+#   cost = float(cost)                      float() преобразовавыает обычное число в число с плавающей точкой
+#   if cost <= 0:                           провека на положительные
+#   except ValueError:                      если ввод будет не того типа то выполнение идет сюда
+#   
+#   data = loadData()                       загружает текущие данные из файла
+#   
+#   if category not in data["categories"]:  проверка на отсутствие категорий в списке уже существующих категорий
+#   
+#   expense = {"cost": cost, "category": category, "name": name}
+#   создание словаря расхода (создание словаряс тремя ключами)
+#   результат:
+#       {"cost": 12.0, "category": "еда", "name": "ужин"}
+#   
+#   data["expenses"].append(expense)        добавляет в "expenses" новую растрату expense
+#   
+#   saveData(data)                          сохранение обновленных данных
+
+def listExpenses(category=None):
 
 #вывод список расходов
 
-def totalExpenses():
+    data = loadData()
+
+    expenses = data["expenses"]
+
+    if category:
+        expenses = [e for e in expenses if e["category"] == category]
+
+        if not expenses:
+            print(f"'{category}' not found")
+
+            return
+        
+    if not expenses:
+        print("no expenses")
+
+        return
+    
+    print("expenses:")
+    print("-" * 60)
+
+    for i, expense in enumerate(expenses, start=1):
+        print(f"{i}. {expense['name']} - {expense['cost']} ({expense['category']})")
+
+        print("-" * 60)
+
+#   category=None                    аргумент по умолчанию (если не передать то будет None) 
+#   пример:
+#       listExpenses()          -> category = None
+#       listExpenses("еда")     -> category = "еда"
+#   
+#   data = loadData()                загрузка данных из файла
+#   expenses = data["expenses"]      получение списка расходов из данных
+#   if category:                     проверка на наличие категории (если category не None то выполняется)
+#
+#   expenses = [e for e in expenses if e["category"] == category]
+#   генератор списка (создает новый список из расходов которые принадлежат к заданной категории)
+#   for e in expenses                перебирает все расходы в списке expenses
+#   if e["category"] == category     проверяет принадлежность категории каждого расхода к заданной категории
+#   
+#   if not expenses:                 проверка на пустой список расходов (если нету расходов то выполняется)
+#   print(f"'{category}' not found") вывод при отсутствии расходов в категории
+#   if not expenses:                 проверка на общее отсутствие расходов (если нету расходов то выполняется)
+#   
+#   print("-" * 60)                  вывод разделительной линии из 60 символов "-"
+#   
+#   for i, expense in enumerate(expenses, start=1):
+#   enumerate()                      позволяет получить индекс и элемент из списка одновременно
+#   
+#   print(f"{i}. {expense['name']} - {expense['cost']} ({expense['category']})") 
+#   пример вывода:
+#       1. Обед - 100.0 (Еда)
+#       2. Кино - 200.0 (Развлечения)
+
+def totalExpenses(category=None):
 
 #вычисляет и выводит сумму расходов
+
+    data = loadData()
+    expenses = data["expenses"]
+
+    if category:
+        expenses = [e for e in expenses if e["category"] == category]
+
+        if not expenses:
+            print(f"'{category}' not found")
+
+            return
+        
+    total = sum(e["cost"] for e in expenses)
+
+    if category:
+        print(f"total for '{category}': {total}")
+
+    else:
+        print(f"total: {total}")
+
+#   data = loadData()                загрузка данных из файла
+#   expenses = data["expenses"]      получение списка расходов из данных
+#   
+#   if category:                     проверка на наличие категории (если category не None то выполняется)
+#   expenses = [e for e in expenses if e["category"] == category]
+#   генератор списка (создает новый список из расходов которые принадлежат к заданной категории)
+#   for e in expenses                перебирает все расходы в списке expenses
+#   if e["category"] == category     проверяет принадлежность категории каждого расхода к заданной категории
+#   
+#   if not expenses:                 проверка на пустой список расходов (если нету расходов то выполняется)
+#   print(f"'{category}' not found") вывод при отсутствии расходов в категории
+#   total = sum(e["cost"] for e in expenses)
+#   sum()                            функция для вычисления суммы
+#   e["cost"] for e in expenses      генератор для получения стоимости каждого расхода из списка расходов
+#
+#   if category:                     проверка на наличие категории (если category не None то выполняется)
+#   print(f"total for '{category}': {total}") 
+#   вывод при наличии категории
+#   else:                            вывод при отсутствии категории
+#   print(f"total: {total}")
 
 def main():
 
@@ -106,7 +247,7 @@ def main():
 
             return
         
-        add_category(sys.argv[2])
+        addCategory(sys.argv[2])
     
     elif command == "add":
         if len(sys.argv) != 5:
@@ -119,12 +260,12 @@ def main():
     elif command == "list":
         category = sys.argv[2] if len(sys.argv) > 2 else None
 
-        listExpanses(category)
+        listExpenses(category)
 
     elif command == "total":
         category = sys.argv[2] if len(sys.argv) > 2 else None
 
-        total_expenses(category)
+        totalExpenses(category)
 
     else:
         print("unknown command: {command}")
