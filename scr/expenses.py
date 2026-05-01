@@ -13,7 +13,7 @@ def loadData():
     
     with open(DATA_FILE, "r", encoding="utf-8") as file:
         return json.load(file)
-    
+
 #   if not os.path.exists(DATA_FILE):               проверка на существование файла DATA_FILE (врзвращает true если файл есть и false если файла нету)
 #   
 #   return {"categories" : [], "expenses" : []}     создание словаря
@@ -28,7 +28,7 @@ def loadData():
 #   encoding="utf-8"        для работы с русской раскладкой
 #   
 #   return json.load(file)
-#   читает json данный из вайла и создает их в питон словарь со списками
+#   читает json данныe из файла и создает его (если он отсутствует) в питон словарь со списками
 
 def saveData(data):
     
@@ -75,7 +75,7 @@ def addCategory(category):
 #   print(f"category '{category}' available")
 #   вывод при успехе успешно
 
-def addExpense(cost, category, name):
+def addExpense(category, name, cost):
 
 #добавить растрату
 
@@ -99,7 +99,7 @@ def addExpense(cost, category, name):
         return
     
     expense = {
-        "cost": cost, "category": category, "name": name
+        "category": category,"name": name, "cost": cost
     }
 
     data["expenses"].append(expense)
@@ -243,7 +243,7 @@ def main():
 
     if command == "add-catt":
         if len(sys.argv) != 3:
-            print("")
+            print("error: 'add-catt' requires exactly one argument")
 
             return
         
@@ -251,7 +251,7 @@ def main():
     
     elif command == "add":
         if len(sys.argv) != 5:
-            print("")
+            print("error: 'add' requires exactly three arguments")
 
             return
         
@@ -268,7 +268,7 @@ def main():
         totalExpenses(category)
 
     else:
-        print("unknown command: {command}")
+        print(f"unknown command: {command}")
 
 #   len(sys.argv) < 2               проверка на количество аргументов
 # 
